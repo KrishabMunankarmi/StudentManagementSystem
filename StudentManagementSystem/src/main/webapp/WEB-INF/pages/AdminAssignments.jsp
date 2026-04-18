@@ -61,15 +61,19 @@ var tbody = document.getElementById("assignmentsTable");
 if (assignments.length === 0) {
     tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No assignments found.</td></tr>";
 } else {
-    assignments.forEach(function(a) {
-    	var submitted = a.submitted ? "✅ Yes" : "❌ No";
-    	var viewBtn = (a.submitted && a.submission_file)
-    	    ? "<a href='${pageContext.request.contextPath}/viewsubmission?id=" + a.id + "' target='_blank' class='btn-secondary' style='margin-right:4px; font-size:0.85rem;'>📄 View</a>"
-    	    : "";
-    	tbody.innerHTML += "<tr><td>" + a.name + "</td><td>" + a.subject_name + "</td><td>" +
-    	    a.title + "</td><td>" + a.due_date + "</td><td>" + submitted + "</td>" +
-    	    "<td>" + viewBtn + "..delete button..</td></tr>";
-    });
+	assignments.forEach(function(a) {
+	    var submitted = a.submitted ? "✅ Yes" : "❌ No";
+	    var viewBtn = (a.submitted && a.submission_file)
+	        ? "<a href='${pageContext.request.contextPath}/viewsubmission?id=" + a.id + "' target='_blank' class='btn-secondary' style='margin-right:4px; font-size:0.85rem;'>📄 View</a>"
+	        : "";
+	    tbody.innerHTML += "<tr><td>" + a.name + "</td><td>" + a.subject_name + "</td><td>" +
+	        a.title + "</td><td>" + a.due_date + "</td><td>" + submitted + "</td>" +
+	        "<td>" + viewBtn +
+	        "<form method='post' action='${pageContext.request.contextPath}/adminassignmentspage' style='display:inline'>" +
+	        "<input type='hidden' name='action' value='delete'>" +
+	        "<input type='hidden' name='id' value='" + a.id + "'>" +
+	        "<button class='btn-delete' onclick=\"return confirm('Delete?')\">Delete</button></form></td></tr>";
+	});
 }
 </script>
 </body>
