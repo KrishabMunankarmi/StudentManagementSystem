@@ -1,0 +1,396 @@
+/* Chatbot.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ── Variables ────────────────────────────────────────────────────────────── */
+:root {
+    --primary:      #2563eb;
+    --primary-dark: #1d4ed8;
+    --light-bg:     #f8fafc;
+    --border:       #e2e8f0;
+    --text:         #1e293b;
+    --white:        #ffffff;
+}
+
+/* ── Reset ────────────────────────────────────────────────────────────────── */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--light-bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+/* ── Containers ───────────────────────────────────────────────────────────── */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+/* ── Navbar ───────────────────────────────────────────────────────────────── */
+.navbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-brand {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 1.2rem;
+}
+
+.nav-links a {
+    margin-left: 1.5rem;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.nav-links a:hover { color: var(--primary); }
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+.btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-block;
+    transition: background 0.2s;
+}
+
+.btn:hover { background: var(--primary-dark); }
+
+/* Attach (📎) button */
+.btn-attach {
+    background: var(--light-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+    font-size: 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-attach:hover {
+    background: #e0e7ff;
+    border-color: var(--primary);
+}
+
+/* Summarize button inside panel */
+.btn-summarize {
+    width: 100%;
+    margin-top: 0.75rem;
+    background: #16a34a;
+}
+
+.btn-summarize:hover  { background: #15803d; }
+.btn-summarize:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
+/* ── Chat Layout ──────────────────────────────────────────────────────────── */
+.chat-container {
+    display: flex;
+    height: 82vh;
+    gap: 0;
+}
+
+.chat-history {
+    width: 240px;
+    border-right: 1px solid var(--border);
+    padding: 1rem;
+    overflow-y: auto;
+    background: var(--white);
+    border-radius: 8px 0 0 8px;
+}
+
+.chat-main {
+    flex: 1;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    background: var(--white);
+    border-radius: 0 8px 8px 0;
+    border: 1px solid var(--border);
+    border-left: none;
+    position: relative; /* needed for upload panel positioning */
+}
+
+/* ── Chat Messages ────────────────────────────────────────────────────────── */
+.chat-messages {
+    flex: 1;
+    background: var(--light-bg);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Chat bubbles */
+.bubble {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    max-width: 85%;
+}
+
+.bubble-user {
+    background: #d1e7ff;
+    align-self: flex-end;
+    text-align: right;
+}
+
+.bubble-bot {
+    background: var(--white);
+    border: 1px solid var(--border);
+    align-self: flex-start;
+}
+
+.bubble-bot hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0.5rem 0;
+}
+
+/* Thinking indicator */
+.thinking {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* ── Chat Input Row ───────────────────────────────────────────────────────── */
+.chat-input-box {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.chat-input-box input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.chat-input-box input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* ── Upload Panel ─────────────────────────────────────────────────────────── */
+.upload-panel {
+    display: none;           /* hidden by default */
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+    animation: slideDown 0.2s ease;
+}
+
+.upload-panel-visible {
+    display: block;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.upload-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.65rem 1rem;
+    background: #eff6ff;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--primary);
+}
+
+.upload-close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #64748b;
+    padding: 0 0.25rem;
+    line-height: 1;
+}
+
+.upload-close-btn:hover { color: #ef4444; }
+
+.upload-panel-body {
+    padding: 1rem;
+}
+
+/* Drop area / file chooser */
+.file-drop-area {
+    display: block;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    text-align: center;
+    cursor: pointer;
+    color: #64748b;
+    font-size: 0.9rem;
+    transition: border-color 0.2s, background 0.2s;
+    user-select: none;
+}
+
+.file-drop-area:hover {
+    border-color: var(--primary);
+    background: #eff6ff;
+    color: var(--primary);
+}
+
+/* Hide the native file input visually */
+.file-drop-area input[type="file"] {
+    display: none;
+}
+
+/* Style options row */
+.upload-options {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.75rem;
+    font-size: 0.88rem;
+    flex-wrap: wrap;
+}
+
+.upload-options-label {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.upload-options label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+    font-weight: 400;
+}
+
+.upload-options input[type="radio"] {
+    width: auto;
+    margin: 0;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .container { padding: 0.75rem; }
+
+    .navbar {
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+    .nav-links {
+        margin-top: 0.75rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .nav-links a { margin: 0; }
+
+    .chat-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .chat-history {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        border-radius: 8px 8px 0 0;
+        max-height: 160px;
+    }
+
+    .chat-main {
+        border-left: 1px solid var(--border);
+        border-radius: 0 0 8px 8px;
+        min-height: 60vh;
+    }
+
+    .bubble { max-width: 100%; }
+}
+
+/* Chat history item with delete button */
+.chat-history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    background: var(--light-bg);
+    border: 1px solid transparent;
+    transition: background 0.2s, border-color 0.2s;
+    font-size: 0.88rem;
+}
+
+.chat-history-item:hover {
+    background: #e0e7ff;
+    border-color: var(--primary);
+}
+
+.chat-history-item.active {
+    background: #e0e7ff;
+    border-color: var(--primary);
+}
+
+.chat-history-info {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Delete button - hidden until hover */
+.chat-delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #94a3b8;
+    padding: 0.2rem 0.3rem;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.2s, color 0.2s;
+    flex-shrink: 0;
+}
+
+.chat-history-item:hover .chat-delete-btn {
+    opacity: 1;
+}
+
+.chat-delete-btn:hover {
+    color: #ef4444;
+    background: #fee2e2;
+}
