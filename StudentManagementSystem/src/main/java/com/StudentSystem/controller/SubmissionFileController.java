@@ -8,12 +8,6 @@ import java.io.*;
 import java.nio.file.*;
 import java.sql.*;
 
-/**
- * Serves submitted assignment files securely.
- * Students can only view their own submissions.
- * Admins can view all submissions.
- * URL: /viewsubmission?id=ASSIGNMENT_ID
- */
 @WebServlet("/viewsubmission")
 public class SubmissionFileController extends HttpServlet {
 
@@ -31,20 +25,21 @@ public class SubmissionFileController extends HttpServlet {
         String assignIdStr = request.getParameter("id");
 
         if (assignIdStr == null) {
-            response.sendError(400, "Assignment ID is required.");
+            response.sendError(400, "Assignment ID required.");
             return;
         }
 
-        int assignmentId = Integer.parseInt(assignIdStr);
-        boolean isAdmin  = "admin".equals(role);
+        int assignmentId  = Integer.parseInt(assignIdStr);
+        boolean isAdmin   = "admin".equals(role);
+        boolean isTeacher = "teacher".equals(role);
         Integer studentId = (Integer) session.getAttribute("student_id");
+        Integer subjectId = (Integer) session.getAttribute("subject_id");
 
-        if (!isAdmin && studentId == null) {
+        if (!isAdmin && !isTeacher && studentId == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        //Fetch submission file from database
         String submissionFile = null;
         try (Connection conn = DbConfig.getDbConnection()) {
             PreparedStatement stmt;
@@ -52,22 +47,27 @@ public class SubmissionFileController extends HttpServlet {
             if (isAdmin) {
                 //Admin can view any submission
                 stmt = conn.prepareStatement(
-                    "SELECT submission_file FROM assignments WHERE id = ? AND submitted = TRUE"
+                    "SELECT submission_file FROM assignments WHERE id=? AND submitted=TRUE"
                 );
                 stmt.setInt(1, assignmentId);
+            } else if (isTeacher) {
+                //Teacher can view submissions for their subject only
+                stmt = conn.prepareStatement(
+                    "SELECT submission_file FROM assignments WHERE id=? AND subject_id=? AND submitted=TRUE"
+                );
+                stmt.setInt(1, assignmentId);
+                stmt.setInt(2, subjectId);
             } else {
                 //Student can only view their own submission
                 stmt = conn.prepareStatement(
-                    "SELECT submission_file FROM assignments WHERE id = ? AND student_id = ? AND submitted = TRUE"
+                    "SELECT submission_file FROM assignments WHERE id=? AND student_id=? AND submitted=TRUE"
                 );
                 stmt.setInt(1, assignmentId);
                 stmt.setInt(2, studentId);
             }
 
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                submissionFile = rs.getString("submission_file");
-            }
+            if (rs.next()) submissionFile = rs.getString("submission_file");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -76,11 +76,10 @@ public class SubmissionFileController extends HttpServlet {
         }
 
         if (submissionFile == null) {
-            response.sendError(404, "Submission file not found or access denied.");
+            response.sendError(404, "File not found or access denied.");
             return;
         }
 
-        //Serve the file
         String uploadsDir = getServletContext().getRealPath("/") + "submissions";
         File file = new File(uploadsDir + File.separator + submissionFile);
 
@@ -89,7 +88,6 @@ public class SubmissionFileController extends HttpServlet {
             return;
         }
 
-        //Set content type based on file extension
         String fileName = submissionFile.toLowerCase();
         if (fileName.endsWith(".pdf")) {
             response.setContentType("application/pdf");
@@ -99,12 +97,11 @@ public class SubmissionFileController extends HttpServlet {
             response.setContentType("application/octet-stream");
         }
 
-        //Set filename for download
-        String originalName = submissionFile.replaceAll("^s\\d+_a\\d+_\\d+_", "");
+        String originalName = submissionFile.replaceAll("^s\\d+_a\\d+_\\d+_", "")
+                                            .replaceAll("^student\\d+_assign\\d+_\\d+_", "");
         response.setHeader("Content-Disposition", "inline; filename=\"" + originalName + "\"");
         response.setContentLengthLong(file.length());
 
-        //Stream file to response
         try (InputStream in = new FileInputStream(file);
              OutputStream out = response.getOutputStream()) {
             byte[] buffer = new byte[4096];

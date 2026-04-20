@@ -5,6 +5,7 @@
         <li><a href="${pageContext.request.contextPath}/admindashboard">Dashboard</a></li>
         <li><a href="${pageContext.request.contextPath}/adminstudents">Students</a></li>
         <li><a href="${pageContext.request.contextPath}/register">Register Student</a></li>
+        <li><a href="${pageContext.request.contextPath}/adminteachers">Teachers</a></li>
         <li><a href="${pageContext.request.contextPath}/admingradespage">Grades</a></li>
         <li><a href="${pageContext.request.contextPath}/adminattendancepage">Attendance</a></li>
         <li><a href="${pageContext.request.contextPath}/adminassignmentspage">Assignments</a></li>
