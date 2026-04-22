@@ -1,10 +1,3 @@
-"""
-chatbot/trainer.py
-Trains multiple ML models and selects the best one.
-Models compared: SVM, Logistic Regression, Naive Bayes, Random Forest
-Vectorizer: TF-IDF with word and character n-grams
-"""
-
 import json
 import pickle
 import os
